@@ -541,8 +541,12 @@ void WebView::loadFinished()
 void WebView::loadUrl(const QUrl &url, const QString &title)
 {
     if (url.scheme() == QLatin1String("javascript")) {
-	QString scriptSource = QUrl::fromPercentEncoding(url.toString(Q_FLAGS(QUrl::TolerantMode|QUrl::RemoveScheme)).toAscii());
+        QString scriptSource = url.toString().mid(11);
         QVariant result = page()->mainFrame()->evaluateJavaScript(scriptSource);
+        if (result.canConvert(QVariant::String)) {
+            QString newHtml = result.toString();
+            setHtml(newHtml);
+        }
         return;
     }
     m_initialUrl = url;
